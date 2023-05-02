@@ -15,14 +15,6 @@ class DatabaseSeeder extends Seeder
     const POSITION_AMOUNT  = 10;
     const MAX_USERS_POSITION_AMOUNT  = 3;
 
-    const USER_TYPES_LIST = [
-        'действующий офисный сотрудник',
-        'архивный офисный сотрудник',
-        'действующий моряк',
-        'архивный моряк',
-        'моряк-соискатель'
-    ];
-
     /**
      * Seed the application's database.
      *
@@ -30,7 +22,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     { 
-        foreach (self::USER_TYPES_LIST as $item) {
+        foreach (UserType::USER_TYPES_LIST as $item) {
             UserType::factory()->create(['title' => $item]);
         } 
 

@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\CRUD;
 
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+
 use Illuminate\Routing\Controller as BaseController;
 
 class CrudController extends BaseController
 {
-    // use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
     protected $repository;
     protected $uri;
     protected $title;
+    protected $filters = [];
     protected $fields = [];
+
 
     protected function index()
     {
+        $this->filters = request()->all();
+
         return view('crud.index', ['template' => $this]);
     }
 
@@ -36,10 +36,11 @@ class CrudController extends BaseController
     {
         try {
             $this->repository->delete($id);
+            return redirect()->route('users.index');
         }
         catch (\Exception $e) {
             return response()->json(
-                ['message' => $e]
+                ['message' => 'Сначала удалите всех сотрудников, использующих эту модель']
             );
         }
     }
@@ -58,6 +59,11 @@ class CrudController extends BaseController
     public function getFields()
     {
         return $this->fields;
+    }
+
+    public function getFilters()
+    {
+        return $this->filters;
     }
 
     public function getUri()

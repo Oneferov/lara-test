@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use \App\Models\User;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -24,19 +25,32 @@ class UserUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8'],
             'user_type_id' => ['required', 'exists:user_types,id'],
-            'position_id' => ['required', 'exists:positions,id'],
+            'position_id' => ['required', 'exists:positions,id']
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if (User::where('id', '!=', $this->id)->where('email', $this->email)->first()) {
+                $validator->errors()->add('email', 'Этот email уже используется в системе');
+            }
+        });
     }
             
 
     public function attributes()
     {
         return [
-            'name' => 'ФИО',
+            'first_name' => 'имя',
+            'last_name' => 'фамилия',
+            'middle_name' => 'отчество',
             'subdivision_id' => 'подразделение',
             'password' => 'пароль',
             'user_type_id' => 'тип',

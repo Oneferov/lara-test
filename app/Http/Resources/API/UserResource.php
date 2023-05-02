@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\CRUD;
+namespace App\Http\Resources\API;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -12,9 +12,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'user_type_id' => $this->user_type->title,
-            'position_id' => $this->position->title,
-            'subdivision_id' => $this->position->subdivision
+            'user_type_id' => $this->user_type->id,
+            'position_id' => $this->position->id,
+            'subdivision_id' => $this->position->subdivision_id
         ];
     }
 }

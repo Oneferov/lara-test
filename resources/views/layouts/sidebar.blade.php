@@ -7,12 +7,6 @@
             <ul class="menu">
                 <li class='sidebar-title'>Main Menu</li>
                 <li class="sidebar-item active ">
-                    <a href="{{route('users.index')}}" class='sidebar-link'>
-                        <i data-feather="home" width="20"></i>
-                        <span>Сотрудники</span>
-                    </a>
-                </li>
-                <li class="sidebar-item active ">
                     <a href="{{route('positions.index')}}" class='sidebar-link'>
                         <i data-feather="home" width="20"></i>
                         <span>Должности</span>
@@ -23,6 +17,22 @@
                         <i data-feather="home" width="20"></i>
                         <span>Типы сотрудников</span>
                     </a>
+                </li>
+                <li class="sidebar-item has-sub">
+                    <a href="#" class="sidebar-link">
+                        <span>Сотрудники</span>
+                    </a>
+                    <ul class="submenu active">
+                        <li>
+                            <a href="{{route('users.index')}}">Все</a>
+                        </li>
+                        
+                        @foreach (\App\Models\UserType::all()->pluck('title', ['id']) as $key => $item)
+                            <li>
+                                <a href="{{route('users.index', ['user_type_id' => $key])}}">{{$item}}</a>
+                            </li>
+                        @endforeach
+                    </ul>
                 </li>
             </ul>
         </div>

@@ -1,6 +1,6 @@
 @extends('layouts.crud')
 @section('content')
-    <div class="container">
+    <div class="container" style="margin-bottom: 60px">
         <div class="row">
             <div class="">
                 <h3>{{$template->getTitle()}}</h3>
@@ -10,7 +10,7 @@
                         <div class="alert alert-info">{{ session()->get('message') }}</div>
                     @endif
                     @if (session()->has('error'))
-                        <div class="alert alert-error">{{ session()->get('error') }}</div>
+                        <div class="alert alert-danger">{{ session()->get('error') }}</div>
                     @endif
                 </div>
                 <a href="{{route($template->getUri().'.create')}}" class="btn btn-success">Создать</a>
@@ -21,7 +21,26 @@
                     <tr>
                         <th>ID</th>
                         @foreach ($template->getFields() as $field)
-                            <th>{{$field['title']}}</th>
+                            <th>
+                                {{ $field['title'] }}
+                                @if (isset($field['search']))
+                                    @if ($field['search']['type'] === 'text')
+                                        <div class="th-input">
+                                            <input name="{{ $field['name'] }}" class="input-sm" type="text" placeholder="Найти...">
+                                        </div>
+                                    @elseif ($field['search']['type'] === 'select')
+                                        <div class="th-input">
+                                            <select 
+                                                @if (array_key_exists($field['name'], $template->getFilters())) disabled @endif
+                                                name="{{$field['name']}}" 
+                                                data-source="{{ $field['search']['source'] }}" 
+                                                class="form-control select-th input-sm">
+                                                    <option></option>
+                                            </select>
+                                        </div>
+                                    @endif
+                                @endif
+                            </th>
                         @endforeach
                         <th>Просмотр</th>
                         <th>Изменение</th>
@@ -32,11 +51,27 @@
                 </table>
 
                 <script>
+
                     $(document).ready(function() {     
+                        getList();
+                        getSource();
+                        closeAlert();
+                    })
+
+                    function getList(filters = null)
+                    {
+                        let params = filters ? `${filters}` : '';
+
+                        @foreach ($template->getFilters() as $key => $value)
+                            params += '{{$key}}' + '=' + '{{$value}}' +'&';
+                        @endforeach
+                       
                         $('#'+'{{$template->getUri()}}').DataTable({
-                            ajax: '{{$template->getUri()}}'+'/list',
+                            ajax: '{{$template->getUri()}}'+'/list?'+params,
                             serverSide: true,
                             processing: true,
+                            destroy: true,
+                            order: [[0, 'desc']],
                             columns: [
                                 {data: 'id', name: 'id'},
                                 @foreach ($template->getFields() as $field)
@@ -62,24 +97,65 @@
                                 }, 
                             ]
                         });
-                    })
+                    }
 
                     function destroy(id) {
                         $.ajax({
-                            method: 'DELETE',
+                            method: 'POST',
                             url: '{{$template->getUri()}}'+'/'+id,
                             data: {
                                 _token: "{{ csrf_token() }}",
+                                _method: "DELETE"
                             },
                             success: function(data) {
                                 if (data.message) {
-                                    console.log('nihuya')
                                     $('.box-body').append(`
-                                        <div class="alert alert-error">${data.message}</div>
-                                    `)
+                                        <div class="alert alert-danger">${data.message}</div>
+                                    `);
+                                    closeAlert();
                                 } else {
-                                    location.reload();
+                                    getList();
                                 }
+                            }
+                        });
+                    }
+
+                    function closeAlert() {
+                        setTimeout(function() {
+                            $('.box-body .alert').hide(500)
+                        }, 2000);
+                    }
+
+                    $(".input-sm").change(function() {
+                        let filters = getFilters();
+                        getList(filters);
+                    });
+ 
+                    function getFilters() {
+                        let filters = '';
+                        $('.input-sm').each(function (index) {
+                            if ($(this).val() !== '' && $(this).attr('name') !== undefined) {
+                                filters += $(this).attr('name') + "=" + $(this).val() + "&";
+                            }
+                        });
+                        return filters;
+                    }
+
+                    function getSource() {
+                        $('th select').each(function () {
+                            var self = this;
+                            if ($(this).data('source')) {
+                                $.ajax({
+                                    'url': 'source?model_name=' + $(this).data('source'),
+                                    'method': 'GET',
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        for (var key in data) {
+                                            var newOption = new Option(data[key], key);
+                                            self.appendChild(newOption);
+                                        }
+                                    }
+                                });
                             }
                         });
                     }

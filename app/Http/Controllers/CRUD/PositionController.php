@@ -54,16 +54,4 @@ class PositionController extends CrudController
         session()->flash('message', 'Элемент успешно обновлен!');
         return view('crud.'.$this->uri.'.show', ['template' => $this, 'model' => $model]);
     }
-
-    public function destroy($id)
-    {
-        try {
-            $this->repository->delete($id);
-        }
-        catch (\Exception $e) {
-            return response()->json(
-                ['message' => $e]
-            );
-        }
-    }
 }

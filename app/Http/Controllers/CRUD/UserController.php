@@ -8,6 +8,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Repositories\UserRepository;
 use Yajra\DataTables\Facades\DataTables;
 use App\Http\Resources\CRUD\UserResource;
+use Illuminate\Http\Request;
 
 
 class UserController extends CrudController
@@ -18,34 +19,55 @@ class UserController extends CrudController
     protected $fields = [
         [
             'name' => 'name',
-            'title' => 'ФИО'
+            'title' => 'ФИО',
+            'search' => [
+                'type' => 'text'
+            ]
         ],
         [
             'name' => 'email',
-            'title' => 'Email'
+            'title' => 'Email',
+            'search' => [
+                'type' => 'text'
+            ]
         ],
         [
-            'name' => 'user_type.title',
-            'title' => 'Тип'
+            'name' => 'user_type_id',
+            'title' => 'Тип',
+            'search' => [
+                'type' => 'select',
+                'source' => 'UserTypes',
+            ]
         ],
         [
-            'name' => 'position.title',
-            'title' => 'Должность'
+            'name' => 'position_id',
+            'title' => 'Должность',
+            'search' => [
+                'type' => 'select',
+                'source' => 'UserPositions',
+            ]
         ],
         [
-            'name' => 'position.subdivision',
-            'title' => 'Подразделение'
+            'name' => 'subdivision_id',
+            'title' => 'Подразделение',
+            'search' => [
+                'type' => 'select',
+                'source' => 'UserSubdivisions',
+            ]
         ]
     ];
+
 
     public function __construct(UserRepository $userRepository)
     {
         $this->repository = $userRepository;
     }
 
-    protected function list()
+    protected function list(Request $request)
     {
-        return DataTables::make($this->repository->getAll())
+        $model = $this->repository->getQueryFilter($request->all());
+
+        return DataTables::make($model)
             ->setTransformer(function ($item) {
                 return UserResource::make($item)->resolve();
             })
@@ -65,17 +87,5 @@ class UserController extends CrudController
         $model->update($request->all());
         session()->flash('message', 'Элемент успешно обновлен!');
         return view('crud.'.$this->uri.'.show', ['template' => $this, 'model' => $model]);
-    }
-
-    public function destroy($id)
-    {
-        try {
-            $this->repository->delete($id);
-        }
-        catch (\Exception $e) {
-            return response()->json(
-                ['message' => $e]
-            );
-        }
     }
 }

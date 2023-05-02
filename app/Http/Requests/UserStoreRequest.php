@@ -24,19 +24,22 @@ class UserStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'middle_name' => ['string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
             'user_type_id' => ['required', 'exists:user_types,id'],
             'position_id' => ['required', 'exists:positions,id'],
         ];
     }
             
-
     public function attributes()
     {
         return [
-            'name' => 'ФИО',
+            'first_name' => 'имя',
+            'last_name' => 'фамилия',
+            'middle_name' => 'отчество',
             'subdivision_id' => 'подразделение',
             'password' => 'пароль',
             'user_type_id' => 'тип',

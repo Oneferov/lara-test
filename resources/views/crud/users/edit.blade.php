@@ -9,12 +9,21 @@
                 <form method="POST" action="{{route($template->getUri().'.update', $model->id)}}" class="form form-vertical">
                     {{ csrf_field() }}
                     <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="id" value="{{$model->id}}">
                     <div class="form-body">
                         <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="name">ФИО</label>
-                                <input type="text" class="form-control" name="name" value="{{$model->name}}">
+                                <label for="first_name">Имя</label>
+                                <input type="text" class="form-control" name="first_name" value="{{$model->first_name}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Фамилия</label>
+                                <input type="text" class="form-control" name="last_name" value="{{$model->last_name}}">
+                            </div>
+                            <div class="form-group">
+                                <label for="middle_name">Отчество</label>
+                                <input type="text" class="form-control" name="middle_name" value="{{$model->middle_name}}">
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>

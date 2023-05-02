@@ -106,7 +106,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'ru_RU',
 
     /*
     |--------------------------------------------------------------------------
@@ -167,6 +167,7 @@ return [
          */
 
         Yajra\DataTables\FractalServiceProvider::class,
+        L5Swagger\L5SwaggerServiceProvider::class,
 
         /*
          * Application Service Providers...

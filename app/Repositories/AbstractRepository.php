@@ -33,6 +33,18 @@ abstract class AbstractRepository implements RepositoryInterface
         return $this->model->all();
     }
 
+    public function getByParams($data)
+    {
+        $query = $this->getQuery();
+        
+        if (!count($data)) return [];
+        foreach ($data as $key => $value) {
+            $query = $query->where($key, trim($value));
+        }
+
+        return $query->get();
+    }
+
     public function getQuery()
     {
         return $this->model->query();
