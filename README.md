@@ -16,7 +16,7 @@ L5_SWAGGER_CONST_HOST=
 
 5  При установленных docker и docker-compose, выполняем сборку контейнеров
 
-docker-compose up -d —build
+docker-compose up -d
 
 6  Устанавливаем composer и зависимости
 
